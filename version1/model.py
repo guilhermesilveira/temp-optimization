@@ -36,9 +36,9 @@ def distinct_planes(s, gate_variables, airplane_count: int):
     # s.add(z3.Distinct(gate_variables))
     for i in range(1, airplane_count + 1):
         only_one = [g == i for g in gate_variables]
-        c = z3.AtMost(*only_one, 1)
-        c = z3.AtLeast(*only_one, 1)
-        s.add(c)
+        c1 = z3.AtMost(*only_one, 1)
+        c2 = z3.AtLeast(*only_one, 1)
+        s.add(z3.And(c1, c2))
 
 
 def constrain_to_planes(s, gates, plane_count):
