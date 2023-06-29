@@ -24,5 +24,11 @@ if s.check() == sat:
     m = s.model()
     res = [[m.evaluate(X[i][j]) for j in range(num_gates)] for i in range(num_planes)]
     print(res)
+    # pretty print
+    for i, plane_res in enumerate(res):
+        print(f"Airplane {i} assignment:")
+        for j, gate in enumerate(plane_res):
+            if gate:
+                print(f"Gate {j}")
 else:
     print('The constraints cannot be satisfied')

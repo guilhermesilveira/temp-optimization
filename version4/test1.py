@@ -1,5 +1,24 @@
 from z3 import *
 
+
+# ADDING TIME!!!!
+# each gate now has time
+# time 0, 1, 2 (int) => airplane is there or not (Int, 0 or 1)
+
+# if gate X is:
+# 00000001000000
+# this means, that the airplane is there at time 8 (1-based index)
+
+
+# 5 gates, 5 planes
+# one gate is never used
+# 00000001000000
+# 00001000000000
+# 00000001000100
+# 00000000000000
+# 01000000000000
+
+
 # Define the problem
 num_planes = 3
 num_gates = 3
