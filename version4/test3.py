@@ -3,40 +3,62 @@ from z3 import *
 # Define the problem
 num_planes = 3
 num_gates = 3
-bus_required = [0, 1, 0]  # Define which gates require buses
+num_times = 5  # Total number of time moments
+
+# Arrival times for each plane
+arrival_times = [1, 2, 0]  # These are just example values, replace them with your actual arrival times
 
 # Initialize Z3 variables
-X = [[Bool(f'X_{i}_{j}') for j in range(num_gates)] for i in range(num_planes)]
+X = [[[Bool(f'X_{i}_{j}_{k}') for k in range(num_times)] for j in range(num_gates)] for i in range(num_planes)]
 
-# Number of passengers and distance from gate to delivery for each plane
-num_passengers = [100, 150, 200]  # Number of passengers per flight
-distances = [[1, 2, 1], [2, 1, 3], [1, 3, 2]]  # Distances from each gate for each flight
+# Create a solver instance
+s = Solver()
 
-# Cost matrices
-costs = [[500 * num_passengers[i] * distances[i][j] if bus_required[j] else 100 * num_passengers[i] * distances[i][j]
-          for j in range(num_gates)] for i in range(num_planes)]
-
-# Create an optimization instance
-opt = Optimize()
-
-# Add constraints that each airplane must be at a single position
-for i in range(num_planes):
-    opt.add(AtMost(*X[i], 1))
-    opt.add(AtLeast(*X[i], 1))
-
-# Add constraints that each position must have at most one airplane
+# Add constraint that no two airplanes can be at the same gate at the same moment
 for j in range(num_gates):
-    opt.add(AtMost(*(X[i][j] for i in range(num_planes)), 1))
+    for k in range(num_times):
+        s.add(AtMost(*[X[i][j][k] for i in range(num_planes)], 1))
 
-# Define the objective function (total cost)
-total_cost = Sum([If(X[i][j], costs[i][j], 0) for i in range(num_planes) for j in range(num_gates)])
-opt.minimize(total_cost)
+# Add constraint that every airplane must be at at least one gate at one moment
+for i in range(num_planes):
+    s.add(Or(*[X[i][j][k] for j in range(num_gates) for k in range(num_times)]))
+
+# Add constraint that if an airplane is at one moment, it must only be at consecutive moments at that gate
+for i in range(num_planes):
+    for j in range(num_gates):
+        for k in range(num_times):
+            if k < num_times - 1:
+                s.add(Implies(And(X[i][j][k], Not(X[i][j][k+1])), 
+                              And([Not(X[i][j][k+t]) for t in range(2, num_times-k)])))
+            if k > 0:
+                s.add(Implies(And(X[i][j][k], Not(X[i][j][k-1])), 
+                              And([Not(X[i][j][k-t]) for t in range(1, k+1)])))
+
+# Add constraint that no airplane is at a gate before its arrival time
+for i in range(num_planes):
+    for j in range(num_gates):
+        for k in range(arrival_times[i]):
+            s.add(Not(X[i][j][k]))
+
+# Force every variable to be either True or False
+for i in range(num_planes):
+    for j in range(num_gates):
+        for k in range(num_times):
+            s.add(Or(X[i][j][k], Not(X[i][j][k])))
 
 # Check if the constraints are satisfied
-if opt.check() == sat:
-    m = opt.model()
-    res = [[m.evaluate(X[i][j]) for j in range(num_gates)] for i in range(num_planes)]
-    print("Assignments:", res)
-    print("Total cost:", m.evaluate(total_cost))
+if s.check() == sat:
+    m = s.model()
+    res = [[[is_true(m.evaluate(X[i][j][k])) for k in range(num_times)] for j in range(num_gates)] for i in range(num_planes)]
+
+    # Print the results in a more readable format
+    for i, plane_res in enumerate(res):
+        print(f"Airplane {i} assignment:")
+        for k in range(num_times):
+            for j in range(num_gates):
+                if plane_res[j][k]:
+                    print(f"  Time {k}: Gate {j}")
+    print("\n")
+
 else:
     print('The constraints cannot be satisfied')

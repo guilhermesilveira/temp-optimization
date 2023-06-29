@@ -1,25 +1,28 @@
-from aeroporto import Aeroporto
-from aviao import Aviao
-from gate import Gate
+from z3 import *
 
-avioes = [Aviao(0, False),
-          Aviao(1, True),
-          Aviao(2, False),
-          Aviao(3, False),
-          Aviao(4, True),
-          Aviao(5, False, False),
-          Aviao(6, False),
-          Aviao(7, False)
-          ]
-gates = [Gate(1, False),
-         Gate(2, False),
-         Gate(3, True),
-         Gate(4, True),
-         Gate(5, False),
-         Gate(6, False, True),
-         Gate(7, True)]
+# Define the problem
+num_planes = 3
+num_gates = 3
 
-aer = Aeroporto(gates, avioes)
-aer.add_neighboor(3, [2, 4])
-aer.solve()
+# Initialize Z3 variables
+X = [[Bool(f'X_{i}_{j}') for j in range(num_gates)] for i in range(num_planes)]
 
+# Create a solver instance
+s = Solver()
+
+# Add constraints that each airplane must be at a single position
+for i in range(num_planes):
+    s.add(AtMost(*X[i], 1))
+    s.add(AtLeast(*X[i], 1))
+
+# Add constraints that each position must have at most one airplane
+for j in range(num_gates):
+    s.add(AtMost(*(X[i][j] for i in range(num_planes)), 1))
+
+# Check if the constraints are satisfied
+if s.check() == sat:
+    m = s.model()
+    res = [[m.evaluate(X[i][j]) for j in range(num_gates)] for i in range(num_planes)]
+    print(res)
+else:
+    print('The constraints cannot be satisfied')
