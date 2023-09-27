@@ -1,5 +1,7 @@
 from z3 import *
 
+# DOUBLE CHECK WHAT WAS CHANGED.... I GUESS THAT IS THE ZERO
+
 # Define the problem
 num_planes = 3
 num_gates = 3
