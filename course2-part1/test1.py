@@ -16,6 +16,10 @@ from z3 import *
 # the same airplane cant be at two gates: no 2 1 on the same column
 # the same gate can not have two airplanes: no 2 1s on the same row
 
+
+
+# x_{i,j} = 1 if plane i park at stand j
+
 from z3 import *
 
 # Define the problem
