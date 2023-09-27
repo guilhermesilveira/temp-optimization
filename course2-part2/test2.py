@@ -1,5 +1,7 @@
 from z3 import *
 
+# WHAT IS HAPPENING ON THIS ONE???????? GUI: come back
+
 # Define the problem
 num_planes = 3
 num_gates = 3
