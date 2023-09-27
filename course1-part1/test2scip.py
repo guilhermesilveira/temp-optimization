@@ -1,6 +1,6 @@
 from ortools.linear_solver import pywraplp
 
-# if this is more complex, IGNORE
+# if this is more complex, IGNORE... at least show once the BIG M
 
 # Create the solver.
 solver = pywraplp.Solver.CreateSolver('SAT')
