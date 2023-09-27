@@ -1,5 +1,7 @@
 from z3 import *
 
+# PLAYING WITH OTHER VALUES AND DOUBLE CHECKING THEM
+
 # Define the problem
 num_planes = 3
 num_gates = 2
