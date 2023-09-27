@@ -54,6 +54,7 @@ def limit_neighbours(s, gates, airplanes):
 
 # SCHENGEN AND PREFERENCES
 
+# Non-Schengen MUST GO to 11 and 12
 
 class Gate:
     def __init__(self, k, large, prefered_non_schengen):
@@ -69,7 +70,6 @@ class Airplane:
         self.k = k
         self.large = large
         self.schengen = schengen
-
 
 def prefer_schengen(s, gates, airplanes):
     # passport control
