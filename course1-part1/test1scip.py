@@ -21,6 +21,11 @@ solver.Add(x >= 7)
 # its different than doing a loop, you have two ways, same results
 # you have two ways, different results
 
+
+# the objective function is fundamental
+# if you dont give it... it is just one solution, any arbitrary values within the constraints
+
+
 solver.Maximize(0 - x)
 
 # Call the solver.
