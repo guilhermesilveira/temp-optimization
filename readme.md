@@ -1,4 +1,10 @@
 # TODO
+gurobipy
+docplex
+julia
+
+
+
 - como funciona recalcular com atraso
 - minimizar variacoes no atraso replanejamento (funcao minimizar recebe dois parametros)
 - use standa 13 o maximo possivel
