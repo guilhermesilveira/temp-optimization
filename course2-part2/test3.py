@@ -1,5 +1,9 @@
 from z3 import *
 
+# WE CAN DO GRACE TIME AFTER THIS ONE
+# GRACE TIME: (original t) ==> [t-1,t+1] => that provides gaps between the airplanes
+
+
 # Define the problem
 num_planes = 3
 num_gates = 3
