@@ -3,6 +3,7 @@ from z3 import *
 
 # IF IT IS A SCHENGEN FLIGHT... IT PREFERS TO GO TO 1 to 10 (penalty to 11 and 12)
 # IF IT IS A NON SCHENGEN FLIGHT.... IT MSUT BE 11 and 12
+# the penalties will work as a weight if you are using multiple soft constraints (11 penalty 5, 12 penalty 10)
 
 
 def constrain_to_planes(s, gates, plane_count):
