@@ -11,14 +11,25 @@ model.Add(x >= 7)  # Combines both constraints: x >= 6 and x >= 7.
 
 # Model the soft constraint: x > 10
 # Introduce a helper binary variable.
-b = model.NewBoolVar('b')
+# b = model.NewBoolVar('b')
 
 # If b=1, then x > 10. If b=0, x can be <= 10.
-model.Add(x > 10).OnlyEnforceIf(b)
-model.Add(x <= 10).OnlyEnforceIf(b.Not())
+# model.Add(x > 10).OnlyEnforceIf(b)
+# model.Add(x <= 10).OnlyEnforceIf(b.Not())
+
+model.Add(10 - x).OnlyEnforceIf(10 - x > 0)
 
 # Objective: Maximize b. This encourages the solver to try to make x > 10.
 model.Maximize(b)
+
+# https://en.wikipedia.org/wiki/Big_M_method
+
+
+# better:
+# we want max 0-x
+# we want soft x > 10
+# p_1 = 10 - x
+# (if 10-x>0)
 
 # Create a solver and solve.
 solver = cp_model.CpSolver()
