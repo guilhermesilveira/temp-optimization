@@ -1,5 +1,7 @@
 from z3 import *
 
+# GRACE TIME OR THIS ONE (whichever is simpler)
+
 # Define the problem
 num_planes = 3
 num_gates = 2
