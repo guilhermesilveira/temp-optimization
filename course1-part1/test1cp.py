@@ -1,5 +1,9 @@
 from ortools.sat.python import cp_model
 
+
+# Do the entire course in google collab
+# install chatgpt on collab
+
 # Create the model.
 model = cp_model.CpModel()
 
