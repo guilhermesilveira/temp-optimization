@@ -1,41 +1,27 @@
 # supports departure time and custom grace times
-# this is old 4 and 5 and grace time support
+# this is old 6 and 7
 
 from ortools.sat.python import cp_model
 from ortools.sat.python.cp_model import LinearExpr
 
 # Define the problem
 num_planes = 3
-num_gates = 3
-num_times = 5  # Total number of time moments
-# Arrival times for each plane
-arrival_times = [1, 2, 0]  # These are just example values, replace them with your actual arrival times
-staying_time = [3, 3, 5]
-# 3 means 1 grace time before, 1 grace time after, 1 period
-# staying_time = departure_time - arrival_time + 1 (or +2)
-# sum(X[a][b][c]==staying_time[a])
-
-
-num_planes = 3
-num_gates = 3
-num_times = 6  # Total number of time moments
-# Arrival times for each plane
-arrival_times = [1, 2, 0]  # These are just example values, replace them with your actual arrival times
-staying_time = [3, 3, 5]
-
-num_planes = 3
 num_gates = 2
-num_times = 6  # Total number of time moments
-# Arrival times for each plane
-arrival_times = [1, 2, 0]  # These are just example values, replace them with your actual arrival times
-staying_time = [3, 3, 5]
+num_times = 5
+arrival_times = [1, 2, 0]
+staying_time = [2, 2, 2]
 
-num_planes = 3
-num_gates = 2
-num_times = 6  # Total number of time moments
-# Arrival times for each plane
-arrival_times = [0, 3, 1]  # These are just example values, replace them with your actual arrival times
-staying_time = [3, 3, 5]
+# Costs for each plane at each gate, should be calculated
+# 2200
+costs = [[500, 1000], [600, 300], [700, 1400]]
+
+# 2000
+arrival_times = [1, 3, 0]
+costs = [[500, 1000], [600, 300], [700, 1400]]
+
+# 2500
+arrival_times = [1, 3, 0]
+costs = [[500, 5000], [600, 13300], [700, 1400]]
 
 my_vars = []
 
@@ -72,20 +58,18 @@ def solve(solver, model):
         for v in my_vars:
             print(f"{v} = {solver.Value(v)}")
         
-        # TODO: remember to add this
-        # print(f"Total cost: {solver.ObjectiveValue()}")
+        # NEW
+        print(f"Total cost: {solver.ObjectiveValue()}")
     else:
         print('No solution found!\n\n\n')
     print("\n\n\n")
 
-# if airplane 4, gate 5 is:
-# 00000001000000
-# this means, that the airplane 4 is there at gate 5 at time 8 (1-based index)
-# all other gates for airplane 4 are:
-# 00000000000000
-
 X = [[[model.NewBoolVar(f'airplane_{i}_at_gate_{j}_time_{k}')
             for k in range(num_times)]
+            for j in range(num_gates)]
+            for i in range(num_planes)]
+
+Y = [[model.NewBoolVar(f'airplane_{i}_uses_gate_{j}')
             for j in range(num_gates)]
             for i in range(num_planes)]
 
@@ -113,6 +97,12 @@ for i in range(num_planes):
         model.Add(LinearExpr.Sum([X[i][not_j][k] for not_j in range(num_gates) if not_j != j for k in range(num_times)]) > 0).OnlyEnforceIf(is_in_any_other_gate)
 
         model.AddImplication(is_this_gate, is_in_any_other_gate.Not())
+
+        # Cost constraint and objective function
+        # Y[i][j] is true if and only if plane i is at gate j at least once
+        # is_this_gate is unneccessary too as it is Y[i][j] now
+        model.AddImplication(is_this_gate, Y[i][j])
+        model.AddImplication(is_this_gate.Not(), Y[i][j].Not())
 
 
 
@@ -145,12 +135,6 @@ for i in range(num_planes):
                 for t in range(0, k - 1):
                     model.AddImplication(plane_situation_arriving, X[i][j][t].Not())
 
-# 1 0 11111111 => nao acontece
-#     ? 0 1
-#     1 0 1 ==> ja nao deixou
-    # 1001
-       # 1
-       #0
 
 
 
@@ -167,6 +151,19 @@ for i in range(num_planes):
 # Add constraint that every airplane must be at least one gate at the arrival time
 for i in range(num_planes):
     model.Add(sum([X[i][j][arrival_times[i]] for j in range(num_gates)]) == 1)
+
+
+
+def multiply_by_array(y, costs):
+    # multiplies with 2 explicit for loops
+    return [y[i][j] * costs[i][j]
+                for i in range(num_planes)
+                for j in range(num_gates)]
+
+# In this case, only a single cost per complete stay
+# It could be a cost per moment of stay
+model.Minimize(sum(multiply_by_array(Y, costs)))
+# opt.minimize(sum(Y[i][j]*costs[i][j] for i in range(num_planes) for j in range(num_gates)))
 
 
 solve(solver, model)
