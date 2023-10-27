@@ -1,7 +1,8 @@
 from ortools.sat.python import cp_model
 from ortools.sat.python.cp_model import LinearExpr
 
-# ADDING TIME!!!!
+# ADDING GRACE TIME!!!!
+# xXx
 # each gate now has time
 # time 0, 1, 2 (int) => airplane is there or not (Int, 0 or 1)
 
@@ -132,6 +133,13 @@ for i in range(num_planes):
                 for t in range(0, k - 1):
                     model.AddImplication(plane_situation_arriving, X[i][j][t].Not())
 
+
+
+
+
+# 1 0 111111
+#k=1
+
 # 1 0 11111111 => nao acontece
 #     ? 0 1
 #     1 0 1 ==> ja nao deixou
@@ -139,5 +147,11 @@ for i in range(num_planes):
        # 1
        #0
 
+# objective function to force a scenario
+# the trick here is that we can use Maximize
+# to try to show that some specific sitatuoins
+# that we want to be accepted ARE accepted
+# demonstration that it supports parking for longer, if required
+# model.Maximize(sum([X[i][j][k] for i in range(num_planes) for j in range(num_gates) for k in range(num_times)]))
 
 solve(solver, model)

@@ -1,5 +1,6 @@
 from ortools.sat.python import cp_model
 
+# TODO: its only one change,. ExactlyOne (so probably same video)
 # now using AtMostOne and ExactlyOne
 
 model = cp_model.CpModel()

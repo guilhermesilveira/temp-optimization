@@ -34,13 +34,15 @@ for i, row in enumerate(X):
 print()
 
 # Add constraints that each airplane must be at a single position
+# column: there should be only one one
 for i in range(num_planes):
     model.Add(sum(X[i][j] for j in range(num_gates)) == 1)
-
 solve(solver, model)
 
 
+
 # Add constraints that each position must have at most one airplane
+# rows: there should be at most one one
 for j in range(num_gates):
     # model.Add(sum(X[i][j] for i in range(num_planes)) <= 1)
     model.AddAtMostOne([X[i][j] for i in range(num_planes)])

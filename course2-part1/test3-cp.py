@@ -59,6 +59,10 @@ def solve(solver, model):
 
 # Define the problem
 num_planes = 3
+
+# I PROMISE DURING RECORDING I AM NOT GOING TO KEEP AN ARRAYT WITH LENGTH
+# THAT HAS NOTHING TO DO WITH IT
+
 num_gates = 3
 bus_required = [0, 1, 0, 1, 0]  # Define which gates require buses
 

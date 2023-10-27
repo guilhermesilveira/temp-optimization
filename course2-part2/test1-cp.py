@@ -8,6 +8,7 @@ from ortools.sat.python.cp_model import LinearExpr
 
 my_vars = []
 
+# temporary help, not to be used in production
 def new_bool(name):
     v = model.NewBoolVar(name)
     my_vars.append(v)
@@ -96,10 +97,17 @@ for i in range(num_planes):
 #     # for each gate, if it is there, it can not be on other gates
     for j in range(num_gates):
 
+        # TODO: call it X again, it is at this specific gate (at any point in time)
         is_this_gate = new_bool(f'plane_{i}_gate_{j}_sum')
         model.Add(LinearExpr.Sum([X[i][j][k] for k in range(num_times)]) > 0).OnlyEnforceIf(is_this_gate);
         model.Add(LinearExpr.Sum([X[i][j][k] for k in range(num_times)]) == 0).OnlyEnforceIf(is_this_gate.Not());
-        
+
+        # X_i_j => !X_i_all_other_j
+        # loop for each other gate and add an implication
+        # programmatic
+
+        # or...
+        # mathematical
         is_in_any_other_gate = new_bool(f'plane_{i}_gate_not_{j}_sum')
         model.Add(LinearExpr.Sum([X[i][not_j][k] for not_j in range(num_gates) if not_j != j for k in range(num_times)]) == 0).OnlyEnforceIf(is_in_any_other_gate.Not())
         model.Add(LinearExpr.Sum([X[i][not_j][k] for not_j in range(num_gates) if not_j != j for k in range(num_times)]) > 0).OnlyEnforceIf(is_in_any_other_gate)

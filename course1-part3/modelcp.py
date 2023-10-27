@@ -1,6 +1,15 @@
 
 from ortools.sat.python import cp_model
 
+# TODO:
+# when instantiating the airplanes and gates
+# stick to explicitely naming the variables the first few times
+# in every video
+
+# TODO, for penalties
+# take a look
+# do it in a matrix X_ij, in python
+
 
 # SCHENGEN
 
@@ -133,11 +142,18 @@ def schengen_only_accepted():
 schengen_only_accepted()
 
 
+
+
+# add another example very clear with the test that can be done by hand
+# two non schengen flights
+# one schengen gate
+
+
 def schengen_only_accepted2():
     model = cp_model.CpModel()
     solver = cp_model.CpSolver()
 
-    airplanes = [Airplane(1, False, False),
+    airplanes = [Airplane(1, False, schengen=False),
                  Airplane(2, False, True),
                  Airplane(3, False, True),
                  Airplane(4, True, False),
@@ -186,6 +202,8 @@ def prefer_schengen(model, gates, airplanes):
             penalty = model.NewIntVar(
                 0, 1000, f'penalty_{gate.k}_{airplane.k}')
             print(f"Penalty {penalty} for gate {gate.k} and airplane {airplane.k}")
+
+            # TODO this should be X...
             # creates a variable for gate.variable == airplane.k
             # this is 1 if the gate is the airplane, 0 otherwise
             gate_equals_airplane = model.NewBoolVar(
@@ -200,6 +218,7 @@ def prefer_schengen(model, gates, airplanes):
             # if the gate is the airplane, the penalty is 1000
             model.Add(penalty == 1000).OnlyEnforceIf(gate_equals_airplane)
             penalties.append(penalty)
+
     # returns all penalties
     return penalties
 

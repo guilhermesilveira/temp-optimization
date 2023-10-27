@@ -15,6 +15,12 @@ staying_time = [3, 3, 5]
 # staying_time = departure_time - arrival_time + 1 (or +2)
 # sum(X[a][b][c]==staying_time[a])
 
+# TODO: those are just comments to say
+# it will get as complex as we want
+# Maximize(sum(X[i][j][k])) for all airplanes [20,0], [10,10] are equal in this situation
+# big airplanes, longer time.
+# all implementation that are straightforward
+# adding to the objective function
 
 num_planes = 3
 num_gates = 3
